@@ -78,16 +78,18 @@ button {
 </div>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+document.addEventListener('DOMContentLoaded', ()=>{
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  initStars();
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
 // ===== ЗВЁЗДЫ =====
 let stars = [];
