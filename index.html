@@ -80,16 +80,16 @@ button {
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{
 
-  const canvas = document.getElementById('canvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initStars();
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  initStars();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 // ===== ЗВЁЗДЫ =====
 let stars = [];
@@ -259,7 +259,6 @@ function animate(){
 
   requestAnimationFrame(animate);
 }
-animate();
 
 // ===== Кнопки =====
 document.getElementById('startBtn').onclick=()=>{
@@ -272,6 +271,11 @@ document.getElementById('heartBtn').onclick=()=>{
   document.getElementById('heartBtn').style.display='none';
   createTextFromParticles();
 };
+
+// Запуск анимации
+animate();
+
+}); // конец DOMContentLoaded
 </script>
 </body>
 </html>
