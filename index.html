@@ -5,87 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Сердце → Текст → Молекула</title>
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  background: #050510;
-  font-family: 'Segoe UI', sans-serif;
+html,body{margin:0;padding:0;overflow:hidden;background:#050510;font-family:'Segoe UI',sans-serif;}
+canvas{position:absolute;top:0;left:0;}
+.center{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;z-index:3;width:90%;
 }
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  pointer-events: none; /* клики проходят сквозь canvas */
-  touch-action: none;   /* для мобильных устройств */
+button{
+  padding:14px 28px;
+  font-size:18px;
+  border-radius:30px;border:none;
+  cursor:pointer;transition:0.3s;
 }
-.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  z-index: 3;
-  width: 90%;
-  max-width: 400px;
-  padding: 0 10px;
-  box-sizing: border-box;
+.start-btn{
+  background:linear-gradient(45deg,#ff7eb3,#ff758c);
+  color:white;box-shadow:0 0 20px rgba(255,120,180,0.6);
 }
-button {
-  width: 100%;
-  max-width: 300px;
-  padding: 14px 28px;
-  font-size: 18px;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.start-btn {
-  background: linear-gradient(45deg,#ff7eb3,#ff758c);
-  color: white;
-  box-shadow: 0 0 20px rgba(255,120,180,0.6);
-}
-.start-btn:hover {
-  transform: scale(1.05);
-}
-.heart-btn {
-  margin-top: 30px;
-  font-size: 60px;
-  background: none;
-  color: white;
-  display: none;
-}
-@media (max-width: 480px) {
-  .start-btn { font-size: 16px; padding: 12px 20px; }
-  .heart-btn { font-size: 40px; }
+.start-btn:hover{transform:scale(1.05);}
+.heart-btn{
+  margin-top:30px;font-size:60px;background:none;color:white;display:none;
 }
 </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
 <div class="center">
-  <button id="startBtn" class="start-btn">Нажми, если готова 🤍</button>
-  <button id="heartBtn" class="heart-btn">🤍</button>
+<button id="startBtn" class="start-btn">Нажми, если готова 🤍</button>
+<button id="heartBtn" class="heart-btn">🤍</button>
 </div>
 
 <script>
-window.onload = function() {
-
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// ===== resize =====
-function resizeCanvas() {
+window.addEventListener('resize',()=>{
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   initStars();
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+});
 
 // ===== ЗВЁЗДЫ =====
 let stars = [];
@@ -95,6 +55,7 @@ function initStars(){
     stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5,speed:Math.random()*0.2});
   }
 }
+initStars();
 function drawStars(){
   stars.forEach(s=>{
     s.y+=s.speed;if(s.y>canvas.height)s.y=0;
@@ -159,7 +120,7 @@ function createTextFromParticles(){
   offCtx.fillStyle='white';
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
-  const fontSize = Math.min(Math.floor(canvas.width/28), 36);
+  const fontSize = Math.floor(canvas.width/36);
   offCtx.font = "bold "+fontSize+"px Segoe UI";
 
   const startY = canvas.height/2 + 100;
@@ -179,13 +140,13 @@ function createTextFromParticles(){
     }
   }
 
-  const totalParticles = Math.max(textPositions.length, 2000);
-  while(particles.length < totalParticles){
+  while(particles.length < textPositions.length){
     const p = new Particle(Math.random()*canvas.width, Math.random()*canvas.height,"#ff7eb3");
     particles.push(p);
   }
 
-  for(let i=0;i<textPositions.length;i++){const pos = textPositions[i];
+  for(let i=0;i<textPositions.length;i++){
+    const pos = textPositions[i];
     const p = particles[i];
     p.tx = pos.x;
     p.ty = pos.y;
@@ -197,6 +158,7 @@ function createTextFromParticles(){
     particles[i].ty = particles[i].y;
   }
 
+  // Запускаем молекулу через 1 сек после текста
   setTimeout(()=>{initMolecule();},1000);
 }
 
@@ -204,7 +166,7 @@ function createTextFromParticles(){
 let moleculeParticles = [];
 let moleculeCenter = {x:0,y:0};
 function initMolecule(){
-  moleculeCenter = {x:canvas.width/2, y:canvas.height/2 + 200};
+  moleculeCenter = {x:canvas.width/2, y:canvas.height/2 - 150};
   moleculeParticles = [
     {angle:0,radius:50,speed:0.02,size:5,color:'#ffde59'},
     {angle:0,radius:80,speed:0.015,size:5,color:'#ff595e'},
@@ -215,6 +177,7 @@ function initMolecule(){
 function drawMolecule(){
   if(moleculeParticles.length===0)return;
 
+  // Ядро
   ctx.beginPath();
   ctx.arc(moleculeCenter.x,moleculeCenter.y,10,0,Math.PI*2);
   ctx.fillStyle='white';
@@ -236,6 +199,7 @@ function drawMolecule(){
     ctx.fill();
     ctx.shadowBlur=0;
 
+    // Орбита
     ctx.beginPath();
     ctx.arc(moleculeCenter.x,moleculeCenter.y,p.radius,0,Math.PI*2);
     ctx.strokeStyle='rgba(255,255,255,0.1)';
@@ -247,11 +211,15 @@ function drawMolecule(){
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   drawStars();
+
   particles.forEach(p=>p.update());
   particles.forEach(p=>p.draw(ctx));
+
   drawMolecule();
+
   requestAnimationFrame(animate);
 }
+animate();
 
 // ===== Кнопки =====
 document.getElementById('startBtn').onclick=()=>{
@@ -262,12 +230,7 @@ document.getElementById('startBtn').onclick=()=>{
 
 document.getElementById('heartBtn').onclick=()=>{
   document.getElementById('heartBtn').style.display='none';
-  createTextFromParticles();
-};
-
-// Запуск анимации
-animate();
-
+  createTextFromParticles(); // текст собирается из частиц сердца
 };
 </script>
 </body>
