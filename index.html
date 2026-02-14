@@ -17,6 +17,7 @@ canvas {
   position:absolute;
   top:0;
   left:0;
+  z-index:1;
 }
 .center {
   position:absolute;
@@ -25,7 +26,7 @@ canvas {
   transform:translate(-50%,-50%);
   text-align:center;
   width:90%;
-  z-index:3;
+  z-index:10;
 }
 button {
   padding:12px 24px;
@@ -58,6 +59,8 @@ button {
 </div>
 
 <script>
+window.onload = function() {
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -215,6 +218,8 @@ document.getElementById('heartBtn').onclick = () => {
   document.getElementById('heartBtn').style.display='none';
   createTextFromParticles();
 };
+
+} // window.onload
 </script>
 </body>
 </html>
