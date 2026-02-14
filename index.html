@@ -71,7 +71,9 @@ function drawStars(){
 // ===== ЧАСТИЦА =====
 class Particle{
   constructor(x,y,color='#ff7eb3'){
-    this.x=x; this.y=y; this.tx=x; this.ty=y; this.size=2; this.color=color;
+    this.x=x; this.y=y; this.tx=x; this.ty=y; 
+    this.size=1.5; // меньше размер для чёткого текста
+    this.color=color;
   }
   update(){ this.x+=(this.tx-this.x)*0.08; this.y+=(this.ty-this.y)*0.08; }
   draw(ctx){
@@ -79,7 +81,7 @@ class Particle{
     ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
     ctx.fillStyle=this.color;
     ctx.shadowColor=this.color;
-    ctx.shadowBlur=6;
+    ctx.shadowBlur=4;
     ctx.fill();
     ctx.shadowBlur=0;
   }
@@ -89,7 +91,7 @@ class Particle{
 function createHeartsParticles(){
   particles=[];
   const cx=canvas.width/2, cy=canvas.height/2;
-  const total=300; // меньше для мобильного
+  const total=300;
   for(let i=0;i<total;i++){
     const t=Math.random()*Math.PI*2;
     const r=Math.random()*15+5;
@@ -115,24 +117,25 @@ function createTextFromParticles(){
   offCtx.textBaseline='middle';
 
   // Динамический размер шрифта для мобильного
-  const fontSize = Math.floor(canvas.width / 16);
+  const fontSize = Math.floor(canvas.width / 12);
   offCtx.font=`bold ${fontSize}px Segoe UI`;
 
-  // Вычисляем стартовую Y координату для вертикального центрирования текста
-  const totalHeight = textLines.length * fontSize * 1.5;
+  // Вычисляем вертикальное центрирование
+  const totalHeight = textLines.length * fontSize * 1.6;
   const startY = canvas.height/2 - totalHeight/2 + fontSize/2;
 
-  textLines.forEach((line,i)=>offCtx.fillText(line, canvas.width/2, startY+i*fontSize*1.5));
+  textLines.forEach((line,i)=>offCtx.fillText(line, canvas.width/2, startY+i*fontSize*1.6));
 
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step=2; // маленький шаг, чтобы буквы полностью формировались
+  const step=1; // каждый пиксель, чтобы текст был чётким
   for(let y=0;y<canvas.height;y+=step){
     for(let x=0;x<canvas.width;x+=step){
       if(imgData[(y*canvas.width+x)*4+3]>128) positions.push({x,y});
     }
   }
-  // Создаем ровно столько частиц, сколько нужно для текста
+
+  // Создаем столько частиц, сколько нужно
   particles = [];
   for(let i=0;i<positions.length;i++){
     const pos = positions[i];
