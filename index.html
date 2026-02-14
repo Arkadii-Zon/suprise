@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Сюрприз</title>
+<title>Сюрприз для мобильного</title>
 <style>
 html,body{margin:0;padding:0;overflow:hidden;background:#050510;font-family:'Segoe UI',sans-serif;}
 canvas{position:absolute;top:0;left:0;}
@@ -17,8 +17,8 @@ canvas{position:absolute;top:0;left:0;}
   width:90%;
 }
 button{
-  padding:14px 28px;
-  font-size:18px;
+  padding:12px 24px;
+  font-size:16px;
   border-radius:30px;
   border:none;
   cursor:pointer;
@@ -27,12 +27,12 @@ button{
 .start-btn{
   background:linear-gradient(45deg,#ff7eb3,#ff758c);
   color:white;
-  box-shadow:0 0 20px rgba(255,120,180,0.6);
+  box-shadow:0 0 15px rgba(255,120,180,0.6);
 }
 .start-btn:hover{transform:scale(1.05);}
 .heart-btn{
-  margin-top:30px;
-  font-size:60px;
+  margin-top:20px;
+  font-size:50px;
   background:none;
   color:white;
   display:none;
@@ -65,9 +65,9 @@ resizeCanvas();
 // ===== ЗВЁЗДЫ =====
 function initStars(){
   stars=[];
-  const count = canvas.width<500?80:150;
+  const count = 60; // меньше для мобильного
   for(let i=0;i<count;i++){
-    stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5,speed:Math.random()*0.2});
+    stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2,speed:Math.random()*0.15});
   }
 }
 function drawStars(){
@@ -94,7 +94,7 @@ class Particle{
     ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
     ctx.fillStyle=this.color;
     ctx.shadowColor=this.color;
-    ctx.shadowBlur=8;
+    ctx.shadowBlur=6;
     ctx.fill();
     ctx.shadowBlur=0;
   }
@@ -104,11 +104,10 @@ class Particle{
 function createHeartsParticles(){
   particles=[];
   const cx=canvas.width/2, cy=canvas.height/2;
-  const scale = canvas.width<500?0.6:1;
-  const total = canvas.width<500?1000:3000;
+  const total = 800; // меньше для мобильного
   for(let i=0;i<total;i++){
     const t=Math.random()*Math.PI*2;
-    const r=(Math.random()*30+10)*scale;
+    const r=(Math.random()*20+8);
     const x=cx + 16*Math.pow(Math.sin(t),3)*r;
     const y=cy - (13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*r;
     const shade=200+Math.random()*55;
@@ -128,13 +127,13 @@ function createTextFromParticles(){
   offCtx.fillStyle='white';
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
-  const fontSize = Math.floor(canvas.width<500?canvas.width/18:canvas.width/36);
+  const fontSize = Math.floor(canvas.width/18);
   offCtx.font=`bold ${fontSize}px Segoe UI`;
-  const startY=canvas.height/2 + (canvas.width<500?50:100);
+  const startY=canvas.height/2 + 50;
   textLines.forEach((line,i)=>offCtx.fillText(line,canvas.width/2,startY + i*fontSize*1.5));
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step = canvas.width<500?4:2;
+  const step = 4;
   for(let y=0;y<canvas.height;y+=step){
     for(let x=0;x<canvas.width;x+=step){
       if(imgData[(y*canvas.width+x)*4+3]>128) positions.push({x,y});
@@ -150,31 +149,30 @@ function createTextFromParticles(){
     particles[i].tx=particles[i].x;
     particles[i].ty=particles[i].y;
   }
-  setTimeout(initMolecule,1000);
+  setTimeout(initMolecule,800);
 }
 
 // ===== МОЛЕКУЛА =====
 function initMolecule(){
-  const scale = canvas.width<500?0.6:1;
-  moleculeCenter={x:canvas.width/2,y:canvas.height/2-(canvas.width<500?100:150)};
+  moleculeCenter={x:canvas.width/2,y:canvas.height/2-100};
   moleculeParticles=[
-    {angle:0,radius:50*scale,speed:0.02,size:5,color:'#ffde59'},
-    {angle:0,radius:80*scale,speed:0.015,size:5,color:'#ff595e'},
-    {angle:0,radius:110*scale,speed:0.01,size:5,color:'#59ffde'}
+    {angle:0,radius:40,speed:0.02,size:4,color:'#ffde59'},
+    {angle:0,radius:65,speed:0.015,size:4,color:'#ff595e'},
+    {angle:0,radius:90,speed:0.01,size:4,color:'#59ffde'}
   ];
 }
 function drawMolecule(){
   if(!moleculeParticles.length) return;
   ctx.beginPath();
-  ctx.arc(moleculeCenter.x,moleculeCenter.y,10,0,Math.PI*2);
+  ctx.arc(moleculeCenter.x,moleculeCenter.y,8,0,Math.PI*2);
   ctx.fillStyle='white'; ctx.fill();
-  ctx.shadowColor='white'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+  ctx.shadowColor='white'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
   moleculeParticles.forEach(p=>{
     p.angle+=p.speed;
     const x=moleculeCenter.x+p.radius*Math.cos(p.angle);
     const y=moleculeCenter.y+p.radius*Math.sin(p.angle);
     ctx.beginPath(); ctx.arc(x,y,p.size,0,Math.PI*2);
-    ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+    ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=6; ctx.fill(); ctx.shadowBlur=0;
     ctx.beginPath(); ctx.arc(moleculeCenter.x,moleculeCenter.y,p.radius,0,Math.PI*2);
     ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.stroke();
   });
@@ -195,7 +193,7 @@ animate();
 document.getElementById('startBtn').onclick=()=>{
   createHeartsParticles();
   document.getElementById('startBtn').style.display='none';
-  setTimeout(()=>{document.getElementById('heartBtn').style.display='inline';},1000);
+  setTimeout(()=>{document.getElementById('heartBtn').style.display='inline';},800);
 };
 document.getElementById('heartBtn').onclick=()=>{
   document.getElementById('heartBtn').style.display='none';
