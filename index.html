@@ -123,8 +123,8 @@ function createTextFromParticles(){
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
 
-  // ===== Размер шрифта чуть меньше =====
-  const fontSize = Math.floor(canvas.width/scale / 14); // было 12, уменьшили для компактности
+  // ===== Размер текста в 2 раза меньше =====
+  const fontSize = Math.floor(canvas.width/scale / 28); // было 14, теперь ~вдвое меньше
   offCtx.font=`bold ${fontSize}px Segoe UI`;
 
   const totalHeight = textLines.length * fontSize * 1.6;
@@ -134,7 +134,7 @@ function createTextFromParticles(){
 
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step = 2; // шаг пикселей
+  const step = 2; 
   for(let y=0;y<canvas.height/scale;y+=step){
     for(let x=0;x<canvas.width/scale;x+=step){
       if(imgData[(y*offCanvas.width + x)*4+3]>128){
