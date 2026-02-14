@@ -19,7 +19,8 @@ canvas {
   top: 0;
   left: 0;
   display: block;
-  pointer-events: none; /* Теперь клики проходят сквозь canvas */
+  pointer-events: none; /* клики проходят сквозь canvas */
+  touch-action: none;   /* для мобильных устройств */
 }
 .center {
   position: absolute;
@@ -58,16 +59,9 @@ button {
   color: white;
   display: none;
 }
-
-/* Мобильные стили */
 @media (max-width: 480px) {
-  .start-btn {
-    font-size: 16px;
-    padding: 12px 20px;
-  }
-  .heart-btn {
-    font-size: 40px;
-  }
+  .start-btn { font-size: 16px; padding: 12px 20px; }
+  .heart-btn { font-size: 40px; }
 }
 </style>
 </head>
@@ -79,11 +73,12 @@ button {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
+window.onload = function() {
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+// ===== resize =====
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -252,12 +247,9 @@ function drawMolecule(){
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   drawStars();
-
   particles.forEach(p=>p.update());
   particles.forEach(p=>p.draw(ctx));
-
   drawMolecule();
-
   requestAnimationFrame(animate);
 }
 
@@ -276,7 +268,7 @@ document.getElementById('heartBtn').onclick=()=>{
 // Запуск анимации
 animate();
 
-}); // конец DOMContentLoaded
+};
 </script>
 </body>
 </html>
