@@ -45,7 +45,7 @@ window.onload = function() {
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-let stars=[], particles=[], moleculeParticles=[], moleculeCenter={x:0,y:0}, textParticles=[], isTextMode=false;
+let stars=[], particles=[], moleculeParticles=[], moleculeCenter={x:0,y:0}, isTextMode=false;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -91,7 +91,7 @@ class Particle{
 function createHeartsParticles(){
   particles=[];
   const cx=canvas.width/2, cy=canvas.height/2;
-  const total=400; // меньше для мобильного
+  const total=400;
   for(let i=0;i<total;i++){
     const t=Math.random()*Math.PI*2;
     const r=Math.random()*20+8;
@@ -106,7 +106,6 @@ function createHeartsParticles(){
 const textLines=["Соскучился по твоей улыбке, Леди","ame de mon ame"];
 function createTextFromParticles(){
   isTextMode=true;
-  textParticles=[];
 
   const offCanvas=document.createElement('canvas');
   offCanvas.width=canvas.width;
@@ -116,33 +115,35 @@ function createTextFromParticles(){
   offCtx.fillStyle='white';
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
-  const fontSize=Math.floor(canvas.width/18);
-  offCtx.font=`bold ${fontSize}px Segoe UI`;
-  const startY=canvas.height/2 + 50;
-  textLines.forEach((line,i)=>offCtx.fillText(line,canvas.width/2, startY+i*fontSize*1.5));
 
-  const imgData=offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
+  // Динамический размер шрифта
+  const fontSize = Math.floor(canvas.width / 16);
+  offCtx.font=`bold ${fontSize}px Segoe UI`;
+
+  // Вычисляем стартовую Y координату, чтобы текст был по центру
+  const totalHeight = textLines.length * fontSize * 1.5;
+  const startY = canvas.height/2 - totalHeight/2 + fontSize/2;
+
+  textLines.forEach((line,i)=>offCtx.fillText(line, canvas.width/2, startY+i*fontSize*1.5));
+
+  const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step=4;
+  const step=2; // шаг 2 пикселя для полной прорисовки текста
   for(let y=0;y<canvas.height;y+=step){
     for(let x=0;x<canvas.width;x+=step){
       if(imgData[(y*canvas.width+x)*4+3]>128) positions.push({x,y});
     }
   }
-
-  // Убираем лишние частицы
-  if(particles.length>positions.length) particles=particles.slice(0,positions.length);
-  // Добавляем недостающие
-  while(particles.length<positions.length) particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height,"#ff7eb3"));
-
-  // Присваиваем всем частицам новые цели
+  // Создаем ровно столько частиц, сколько нужно
+  particles = [];
   for(let i=0;i<positions.length;i++){
-    particles[i].tx = positions[i].x;
-    particles[i].ty = positions[i].y;
-    textParticles.push(particles[i]);
+    const pos = positions[i];
+    const p = new Particle(Math.random()*canvas.width, Math.random()*canvas.height,"#ff7eb3");
+    p.tx = pos.x; p.ty = pos.y;
+    particles.push(p);
   }
 
-  // Молекула появляется через короткую паузу
+  // Молекула через короткую паузу
   setTimeout(initMolecule,800);
 }
 
