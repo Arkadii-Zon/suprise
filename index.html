@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Сюрприз для мобильного</title>
+<title>Мобильный сюрприз</title>
 <style>
 html, body {
   margin:0; padding:0; overflow:hidden; background:#050510;
@@ -51,7 +51,6 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   initStars();
-  if(isTextMode) createTextFromParticles();
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
@@ -59,14 +58,13 @@ resizeCanvas();
 // ===== ЗВЁЗДЫ =====
 function initStars(){
   stars=[];
-  for(let i=0;i<60;i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.2, speed:Math.random()*0.15});
+  for(let i=0;i<50;i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.2, speed:Math.random()*0.15});
 }
 function drawStars(){
   stars.forEach(s=>{
     s.y += s.speed; if(s.y>canvas.height) s.y=0;
     ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle='white';
-    ctx.fill();
+    ctx.fillStyle='white'; ctx.fill();
   });
 }
 
@@ -91,10 +89,10 @@ class Particle{
 function createHeartsParticles(){
   particles=[];
   const cx=canvas.width/2, cy=canvas.height/2;
-  const total=400;
+  const total=300; // меньше для мобильного
   for(let i=0;i<total;i++){
     const t=Math.random()*Math.PI*2;
-    const r=Math.random()*20+8;
+    const r=Math.random()*15+5;
     const x=cx+16*Math.pow(Math.sin(t),3)*r;
     const y=cy-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*r;
     const shade=200+Math.random()*55;
@@ -116,11 +114,11 @@ function createTextFromParticles(){
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
 
-  // Динамический размер шрифта
+  // Динамический размер шрифта для мобильного
   const fontSize = Math.floor(canvas.width / 16);
   offCtx.font=`bold ${fontSize}px Segoe UI`;
 
-  // Вычисляем стартовую Y координату, чтобы текст был по центру
+  // Вычисляем стартовую Y координату для вертикального центрирования текста
   const totalHeight = textLines.length * fontSize * 1.5;
   const startY = canvas.height/2 - totalHeight/2 + fontSize/2;
 
@@ -128,13 +126,13 @@ function createTextFromParticles(){
 
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step=2; // шаг 2 пикселя для полной прорисовки текста
+  const step=2; // маленький шаг, чтобы буквы полностью формировались
   for(let y=0;y<canvas.height;y+=step){
     for(let x=0;x<canvas.width;x+=step){
       if(imgData[(y*canvas.width+x)*4+3]>128) positions.push({x,y});
     }
   }
-  // Создаем ровно столько частиц, сколько нужно
+  // Создаем ровно столько частиц, сколько нужно для текста
   particles = [];
   for(let i=0;i<positions.length;i++){
     const pos = positions[i];
