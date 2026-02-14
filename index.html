@@ -124,7 +124,7 @@ function createTextFromParticles(){
   offCtx.textBaseline='middle';
 
   // ===== Размер текста в 2 раза меньше =====
-  const fontSize = Math.floor(canvas.width/scale / 25); // было 14, теперь ~вдвое меньше
+  const fontSize = Math.floor(canvas.width/scale / 23); // было 14, теперь ~вдвое меньше
   offCtx.font=`bold ${fontSize}px Segoe UI`;
 
   const totalHeight = textLines.length * fontSize * 1.6;
