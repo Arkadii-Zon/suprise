@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Мобильный сюрприз</title>
+<title>Чёткий мобильный сюрприз</title>
 <style>
 html, body {
   margin:0; padding:0; overflow:hidden; background:#050510;
@@ -47,9 +47,16 @@ const ctx = canvas.getContext('2d');
 
 let stars=[], particles=[], moleculeParticles=[], moleculeCenter={x:0,y:0}, isTextMode=false;
 
+// ===== МАСШТАБ ДЛЯ RETINA =====
+const scale = window.devicePixelRatio || 1;
+
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth * scale;
+  canvas.height = window.innerHeight * scale;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.scale(scale, scale);
   initStars();
 }
 window.addEventListener('resize', resizeCanvas);
@@ -58,11 +65,11 @@ resizeCanvas();
 // ===== ЗВЁЗДЫ =====
 function initStars(){
   stars=[];
-  for(let i=0;i<50;i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.2, speed:Math.random()*0.15});
+  for(let i=0;i<50;i++) stars.push({x:Math.random()*canvas.width/scale, y:Math.random()*canvas.height/scale, r:Math.random()*1.2, speed:Math.random()*0.15});
 }
 function drawStars(){
   stars.forEach(s=>{
-    s.y += s.speed; if(s.y>canvas.height) s.y=0;
+    s.y += s.speed; if(s.y>canvas.height/scale) s.y=0;
     ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
     ctx.fillStyle='white'; ctx.fill();
   });
@@ -72,7 +79,7 @@ function drawStars(){
 class Particle{
   constructor(x,y,color='#ff7eb3'){
     this.x=x; this.y=y; this.tx=x; this.ty=y; 
-    this.size=1.5; // меньше размер для чёткого текста
+    this.size=1.5;
     this.color=color;
   }
   update(){ this.x+=(this.tx-this.x)*0.08; this.y+=(this.ty-this.y)*0.08; }
@@ -90,7 +97,7 @@ class Particle{
 // ===== СЕРДЦЕ =====
 function createHeartsParticles(){
   particles=[];
-  const cx=canvas.width/2, cy=canvas.height/2;
+  const cx=canvas.width/scale/2, cy=canvas.height/scale/2;
   const total=300;
   for(let i=0;i<total;i++){
     const t=Math.random()*Math.PI*2;
@@ -116,41 +123,39 @@ function createTextFromParticles(){
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
 
-  // Динамический размер шрифта для мобильного
-  const fontSize = Math.floor(canvas.width / 12);
+  const fontSize = Math.floor(canvas.width/scale / 12);
   offCtx.font=`bold ${fontSize}px Segoe UI`;
 
-  // Вычисляем вертикальное центрирование
   const totalHeight = textLines.length * fontSize * 1.6;
-  const startY = canvas.height/2 - totalHeight/2 + fontSize/2;
+  const startY = canvas.height/scale/2 - totalHeight/2 + fontSize/2;
 
-  textLines.forEach((line,i)=>offCtx.fillText(line, canvas.width/2, startY+i*fontSize*1.6));
+  textLines.forEach((line,i)=>offCtx.fillText(line, canvas.width/scale/2, startY+i*fontSize*1.6));
 
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step=1; // каждый пиксель, чтобы текст был чётким
-  for(let y=0;y<canvas.height;y+=step){
-    for(let x=0;x<canvas.width;x+=step){
-      if(imgData[(y*canvas.width+x)*4+3]>128) positions.push({x,y});
+  const step = 2; // шаг 2px — хороший баланс между чёткостью и количеством частиц
+  for(let y=0;y<canvas.height/scale;y+=step){
+    for(let x=0;x<canvas.width/scale;x+=step){
+      if(imgData[(y*offCanvas.width + x)*4+3]>128){
+        positions.push({x,y});
+      }
     }
   }
 
-  // Создаем столько частиц, сколько нужно
   particles = [];
   for(let i=0;i<positions.length;i++){
     const pos = positions[i];
-    const p = new Particle(Math.random()*canvas.width, Math.random()*canvas.height,"#ff7eb3");
+    const p = new Particle(Math.random()*canvas.width/scale, Math.random()*canvas.height/scale,"#ff7eb3");
     p.tx = pos.x; p.ty = pos.y;
     particles.push(p);
   }
 
-  // Молекула через короткую паузу
   setTimeout(initMolecule,800);
 }
 
 // ===== МОЛЕКУЛА =====
 function initMolecule(){
-  moleculeCenter={x:canvas.width/2, y:canvas.height/2-100};
+  moleculeCenter={x:canvas.width/scale/2, y:canvas.height/scale/2-100};
   moleculeParticles=[
     {angle:0,radius:40,speed:0.02,size:4,color:'#ffde59'},
     {angle:0,radius:65,speed:0.015,size:4,color:'#ff595e'},
@@ -179,7 +184,7 @@ function drawMolecule(){
 
 // ===== АНИМАЦИЯ =====
 function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,canvas.width/scale,canvas.height/scale);
   drawStars();
   particles.forEach(p=>p.update());
   particles.forEach(p=>p.draw(ctx));
