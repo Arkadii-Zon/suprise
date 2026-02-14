@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Чёткий мобильный сюрприз</title>
+<title>Мобильный сюрприз</title>
 <style>
 html, body {
   margin:0; padding:0; overflow:hidden; background:#050510;
@@ -47,7 +47,7 @@ const ctx = canvas.getContext('2d');
 
 let stars=[], particles=[], moleculeParticles=[], moleculeCenter={x:0,y:0}, isTextMode=false;
 
-// ===== МАСШТАБ ДЛЯ RETINA =====
+// ===== Масштаб под Retina =====
 const scale = window.devicePixelRatio || 1;
 
 function resizeCanvas() {
@@ -123,9 +123,19 @@ function createTextFromParticles(){
   offCtx.textAlign='center';
   offCtx.textBaseline='middle';
 
-  const fontSize = Math.floor(canvas.width/scale / 12);
-  offCtx.font=`bold ${fontSize}px Segoe UI`;
+  // Динамический размер шрифта под ширину экрана
+  let fontSize = Math.floor(canvas.width/scale / 12);
+  offCtx.font = bold ${fontSize}px Segoe UI;
 
+  // Проверка ширины каждой строки и уменьшение шрифта, если не помещается
+  textLines.forEach(line => {
+      while(offCtx.measureText(line).width > canvas.width/scale * 0.9){ // 90% ширины экрана
+          fontSize--;
+          offCtx.font = bold ${fontSize}px Segoe UI;
+      }
+  });
+
+  // Вертикальное центрирование
   const totalHeight = textLines.length * fontSize * 1.6;
   const startY = canvas.height/scale/2 - totalHeight/2 + fontSize/2;
 
@@ -133,7 +143,7 @@ function createTextFromParticles(){
 
   const imgData = offCtx.getImageData(0,0,offCanvas.width,offCanvas.height).data;
   let positions=[];
-  const step = 2; // шаг 2px — хороший баланс между чёткостью и количеством частиц
+  const step = 2;
   for(let y=0;y<canvas.height/scale;y+=step){
     for(let x=0;x<canvas.width/scale;x+=step){
       if(imgData[(y*offCanvas.width + x)*4+3]>128){
